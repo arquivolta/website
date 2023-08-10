@@ -13,6 +13,15 @@ const defaultRedirect = "https://arquivolta.dev";
 // always provide this redirect so that if that site ever goes pear-shaped, we can
 // shim it server-side
 export function GET(request: NextRequest) {
-	let q = request.nextUrl.searchParams.get('q');
-	return NextResponse.redirect(redirectTable[q ?? '__nothere'] || defaultRedirect);
+  let q = request.nextUrl.searchParams.get('q');
+  if (q == 'arch-x8664-image') {
+    let tgt = request.nextUrl.searchParams.get('tgt');
+    if (!/^[a-zA-Z0-9\-\_\.]+$/.test(tgt ?? '')) {
+      return new NextResponse(null, { status: 401, statusText: 'no' });
+    }
+
+    return NextResponse.redirect(`https://mirror.rackspace.com/archlinux/iso/latest/${tgt}`);
+  }
+
+  return NextResponse.redirect(redirectTable[q ?? '__nothere'] ?? defaultRedirect);
 }
